@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeaCheck Admin Dashboard</title>
+    <style>
+        /* Your existing CSS styles here - keep them exactly as they are */
+        :root {
+            --sea-blue: #2E86AB;
+            --sea-green: #1B9AAA;
+            --light-blue: #A8D0E6;
+            --ocean-dark: #243B4A;
+            --white: #FFFFFF;
+            --gold: #FFD700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: clamp(10px, 3vw, 20px);
+            background: linear-gradient(135deg, var(--sea-blue) 0%, var(--sea-green) 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: min(1400px, 95vw);
+            margin: 0 auto;
+            background: var(--white);
+            padding: clamp(15px, 3vw, 25px);
+            border-radius: clamp(10px, 2vw, 15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: clamp(20px, 4vw, 30px);
+            padding-bottom: clamp(15px, 3vw, 20px);
+            border-bottom: 2px solid var(--light-blue);
+        }
+
+        .logo {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            margin: 0;
+            color: var(--sea-blue);
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: var(--sea-green);
+            margin: clamp(5px, 1vw, 10px) 0 0 0;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+        }
+
+        .admin-welcome {
+            background: linear-gradient(135deg, var(--gold) 0%, #FFEC8B 100%);
+            color: var(--ocean-dark);
+            padding: clamp(10px, 2vw, 15px);
+            border-radius: clamp(6px, 1.5vw, 8px);
+            text-align: center;
+            margin-bottom: clamp(15px, 3vw, 20px);
+            font-weight: bold;
+        }
+
+        /* ... include ALL your existing CSS styles ... */
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: clamp(15px, 3vw, 20px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: clamp(6px, 1.5vw, 8px);
+            overflow: hidden;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        }
+
+        th, td {
+            padding: clamp(8px, 2vw, 12px);
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: var(--sea-blue);
+            color: white;
+            font-weight: 600;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        }
+
+        tr:hover {
+            background-color: #f8fdff;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 12px);
+            border-radius: clamp(3px, 1vw, 4px);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            margin: 2px;
+        }
+
+        .view-code-btn {
+            background: var(--sea-green);
+            color: white;
+            border: none;
+            padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2vw, 12px);
+            border-radius: clamp(3px, 1vw, 4px);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            margin: 2px;
+        }
+
+        .view-code-btn:hover {
+            background: var(--sea-blue);
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(150px, 40vw), 1fr));
+            gap: clamp(10px, 2vw, 15px);
+            margin-bottom: clamp(20px, 4vw, 30px);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--sea-blue) 0%, var(--sea-green) 100%);
+            color: white;
+            padding: clamp(15px, 3vw, 20px);
+            border-radius: clamp(6px, 1.5vw, 8px);
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(46, 134, 171, 0.3);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-weight: bold;
+        }
+
+        .stat-card p {
+            margin: clamp(5px, 1vw, 8px) 0 0 0;
+            opacity: 0.9;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+        }
+
+        .code-cell {
+            font-family: 'Courier New', monospace;
+            background: #f8fdff;
+            padding: clamp(6px, 1.5vw, 8px);
+            border-radius: clamp(3px, 1vw, 4px);
+            border: 1px solid var(--light-blue);
+            font-weight: bold;
+            color: var(--ocean-dark);
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            word-break: break-all;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .code-cell.masked {
+            color: transparent;
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
+            background: #f0f0f0;
+        }
+
+        .code-cell.masked::after {
+            content: "👁️ Click to reveal";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #666;
+            font-size: clamp(0.6rem, 1.5vw, 0.7rem);
+            text-shadow: none;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-bottom: clamp(15px, 3vw, 20px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(8px, 2vw, 12px);
+            justify-content: center;
+        }
+
+        .nav-links a, .nav-links button {
+            color: var(--sea-blue);
+            text-decoration: none;
+            font-weight: 500;
+            padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
+            border-radius: clamp(4px, 1vw, 6px);
+            transition: background 0.3s;
+            border: 1px solid var(--sea-blue);
+            background: white;
+            cursor: pointer;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        }
+
+        .nav-links a:hover, .nav-links button:hover {
+            background: var(--sea-blue);
+            color: white;
+        }
+
+        .logout-btn {
+            background: #ff4444 !important;
+            border-color: #ff4444 !important;
+            color: white !important;
+        }
+
+        .logout-btn:hover {
+            background: #cc0000 !important;
+            border-color: #cc0000 !important;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-top: clamp(15px, 3vw, 20px);
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: clamp(30px, 8vw, 60px) clamp(15px, 4vw, 20px);
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: clamp(8px, 2vw, 12px);
+            color: var(--sea-blue);
+        }
+
+        .refresh-btn {
+            background: var(--sea-green);
+            color: white;
+            border: none;
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px);
+            border-radius: clamp(4px, 1vw, 6px);
+            cursor: pointer;
+            margin: clamp(5px, 1vw, 10px);
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        }
+
+        .error-state {
+            text-align: center;
+            color: red;
+            padding: clamp(15px, 3vw, 20px);
+            background: #fff0f0;
+            border-radius: clamp(6px, 1.5vw, 8px);
+            margin: clamp(15px, 3vw, 20px) 0;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        }
+
+        .full-code-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: clamp(20px, 4vw, 30px);
+            border-radius: clamp(10px, 2vw, 15px);
+            max-width: min(500px, 90vw);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h3 {
+            color: var(--sea-blue);
+            margin-bottom: clamp(15px, 3vw, 20px);
+        }
+
+        .full-code-display {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            background: #f8fdff;
+            padding: clamp(15px, 3vw, 20px);
+            border-radius: clamp(6px, 1.5vw, 8px);
+            border: 2px solid var(--sea-blue);
+            margin: clamp(15px, 3vw, 20px) 0;
+            word-break: break-all;
+        }
+
+        .close-modal {
+            background: var(--sea-blue);
+            color: white;
+            border: none;
+            padding: clamp(8px, 2vw, 12px) clamp(20px, 4vw, 30px);
+            border-radius: clamp(4px, 1vw, 6px);
+            cursor: pointer;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+        }
+
+        /* Responsive table for mobile */
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            th, td {
+                padding: 8px 6px;
+            }
+            .code-cell {
+                max-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            .nav-links a, .nav-links button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Full Code Modal -->
+    <div class="full-code-modal" id="fullCodeModal">
+        <div class="modal-content">
+            <h3>🔐 Full Gift Card Code</h3>
+            <div class="full-code-display" id="fullCodeDisplay"></div>
+            <button class="close-modal" onclick="closeFullCodeModal()">Close</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">🌊 SeaCheck Admin</h1>
+            <p class="subtitle">Tech-Magnet-Studio Control Panel</p>
+        </div>
+
+        <div class="admin-welcome">
+            👑 Welcome, Tech-Magnet-Studio Administrator
+        </div>
+
+        <div class="nav-links">
+            <a href="/">← Back to Main App</a>
+            <button class="refresh-btn" onclick="loadAdminData()">🔄 Refresh Data</button>
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <h3 id="totalCards">0</h3>
+                <p>Total Cards</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalBalance">$0.00</h3>
+                <p>Total Balance</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="uniqueTypes">0</h3>
+                <p>Card Types</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="averageBalance">$0.00</h3>
+                <p>Average Balance</p>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-state" style="display: none;">
+            Authentication required. Please login again.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Card Type</th>
+                    <th>Card Name</th>
+                    <th>Full Code</th>
+                    <th>Balance</th>
+                    <th>Check Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="historyTable">
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        <h3>Loading data...</h3>
+                        <p>Please wait while we load the gift card records</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="last-updated" id="lastUpdated">
+            Last updated: <span id="updateTime">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        // Authentication helper
+        function getAuthHeaders() {
+            const token = localStorage.getItem('adminToken');
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        let allRecords = [];
+
+        async function loadAdminData() {
+            try {
+                const response = await fetch('/admin/history', {
+                    headers: getAuthHeaders()
+                });
+
+                if (response.status === 401) {
+                    // Not authenticated, redirect to login
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminEmail');
+                    window.location.href = '/admin';
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                allRecords = data; // Store all records for modal access
+
+                // Hide error message
+                document.getElementById('errorMessage').style.display = 'none';
+
+                // Update last updated time
+                document.getElementById('updateTime').textContent = new Date().toLocaleString();
+
+                // Update stats
+                const totalCards = data.length;
+                const totalBalance = data.reduce((sum, card) => sum + parseFloat(card.balance || 0), 0);
+                const uniqueCardTypes = [...new Set(data.map(card => card.card_type))].length;
+                const averageBalance = totalCards > 0 ? totalBalance / totalCards : 0;
+
+                document.getElementById('totalCards').textContent = totalCards;
+                document.getElementById('totalBalance').textContent = `$${totalBalance.toFixed(2)}`;
+                document.getElementById('uniqueTypes').textContent = uniqueCardTypes;
+                document.getElementById('averageBalance').textContent = `$${averageBalance.toFixed(2)}`;
+
+                // Update table
+                const tbody = document.getElementById('historyTable');
+                if (data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                <h3>No gift card records yet</h3>
+                                <p>Check some gift card balances to see data here</p>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    let tableHTML = '';
+                    data.forEach((card, index) => {
+                        // Mask the code for security
+                        const maskedCode = maskCardCode(card.full_code);
+                        tableHTML += `
+                            <tr>
+                                <td><strong>#${card.id}</strong></td>
+                                <td>${card.card_type}</td>
+                                <td>${card.card_name || '---'}</td>
+                                <td class="code-cell masked" onclick="showFullCode(${index})" title="Click to reveal full code">
+                                    ${maskedCode}
+                                </td>
+                                <td><strong>$${parseFloat(card.balance).toFixed(2)}</strong></td>
+                                <td>${new Date(card.check_date).toLocaleString()}</td>
+                                <td>
+                                    <button class="view-code-btn" onclick="showFullCodeModal(${index})">
+                                        👁️ View Code
+                                    </button>
+                                    <button class="delete-btn" onclick="deleteRecord(${card.id})">
+                                        🗑️ Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = tableHTML;
+                }
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+                if (error.message.includes('401')) {
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorMessage').textContent = 'Authentication required. Redirecting to login...';
+                    setTimeout(() => window.location.href = '/admin', 2000);
+                } else {
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorMessage').textContent = 'Error loading data. Please check your connection.';
+                }
+            }
+        }
+
+        function maskCardCode(code) {
+            if (code.length <= 8) return '••••••••';
+            const visibleStart = code.substring(0, 4);
+            const visibleEnd = code.substring(code.length - 4);
+            return `${visibleStart}••••${visibleEnd}`;
+        }
+
+        function showFullCode(index) {
+            const codeCell = event.target;
+            if (codeCell.classList.contains('masked')) {
+                codeCell.textContent = allRecords[index].full_code;
+                codeCell.classList.remove('masked');
+            } else {
+                codeCell.textContent = maskCardCode(allRecords[index].full_code);
+                codeCell.classList.add('masked');
+            }
+        }
+
+        function showFullCodeModal(index) {
+            const record = allRecords[index];
+            document.getElementById('fullCodeDisplay').textContent = record.full_code;
+            document.getElementById('fullCodeModal').style.display = 'flex';
+        }
+
+        function closeFullCodeModal() {
+            document.getElementById('fullCodeModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('fullCodeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeFullCodeModal();
+            }
+        });
+
+        async function deleteRecord(id) {
+            if (!confirm('Are you sure you want to delete this record? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/record/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                if (response.ok) {
+                    loadAdminData();
+                } else if (response.status === 401) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/admin';
+                } else {
+                    alert('Error deleting record');
+                }
+            } catch (error) {
+                console.error('Error deleting record:', error);
+                alert('Network error. Please check your connection.');
+            }
+        }
+
+        async function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminEmail');
+            window.location.href = '/admin';
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdminData();
+        });
+
+        // Refresh every 30 seconds
+        setInterval(loadAdminData, 30000);
+    </script>
+</body>
+</html>

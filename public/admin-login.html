@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SeaCheck</title>
+    <style>
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --royal-blue: #1a237e;
+            --light-gold: #FFF8DC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0 auto;
+            padding: 5vw;
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 50%, #4a69bd 100%);
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: clamp(25px, 6vw, 50px);
+            border-radius: clamp(15px, 3vw, 25px);
+            box-shadow:
+                0 20px 40px rgba(0,0,0,0.3),
+                0 0 0 1px rgba(255, 215, 0, 0.3);
+            margin: 2vh auto;
+            max-width: min(450px, 90vw);
+            width: 100%;
+            border: 2px solid var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), var(--dark-gold), var(--gold));
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: clamp(25px, 5vw, 40px);
+            position: relative;
+        }
+
+        .crown {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            margin-bottom: clamp(10px, 2vw, 15px);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: block;
+        }
+
+        .brand-name {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            background: linear-gradient(135deg, var(--dark-gold) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .brand-subtitle {
+            color: var(--royal-blue);
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            margin-top: clamp(5px, 1vw, 10px);
+            opacity: 0.8;
+        }
+
+        .form-group {
+            margin-bottom: clamp(20px, 4vw, 30px);
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: clamp(8px, 1.5vw, 12px);
+            font-weight: 600;
+            color: var(--royal-blue);
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: clamp(12px, 3vw, 16px);
+            border: 2px solid #ddd;
+            border-radius: clamp(8px, 2vw, 12px);
+            font-size: clamp(14px, 4vw, 16px);
+            transition: all 0.3s ease;
+            background: var(--light-gold);
+        }
+
+        input[type="email"]:focus, input[type="password"]:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+            background: white;
+        }
+
+        .royal-button {
+            background: linear-gradient(135deg, var(--dark-gold) 0%, var(--gold) 100%);
+            color: var(--royal-blue);
+            padding: clamp(14px, 3vw, 18px) clamp(25px, 5vw, 35px);
+            border: none;
+            border-radius: clamp(8px, 2vw, 12px);
+            cursor: pointer;
+            width: 100%;
+            font-size: clamp(14px, 4vw, 16px);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: clamp(15px, 3vw, 25px);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid transparent;
+        }
+
+        .royal-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            border-color: var(--dark-gold);
+        }
+
+        .royal-button:active {
+            transform: translateY(-1px);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: clamp(20px, 4vw, 30px);
+            padding-top: clamp(15px, 3vw, 20px);
+            border-top: 1px solid #eee;
+        }
+
+        .register-link a {
+            color: var(--royal-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .register-link a:hover {
+            color: var(--dark-gold);
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: clamp(10px, 2vw, 15px);
+            border-radius: clamp(6px, 1.5vw, 8px);
+            margin-bottom: clamp(15px, 3vw, 20px);
+            text-align: center;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            display: none;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .message.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            body {
+                padding: 3vw;
+            }
+            .login-container {
+                padding: 8vw;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .login-container {
+                padding: 4vw;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .login-container {
+                max-width: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="brand-header">
+            <span class="crown">👑</span>
+            <h1 class="brand-name">Tech-Magnet-Studio</h1>
+            <p class="brand-subtitle">SeaCheck Admin Portal</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required
+                    placeholder="admin@tech-magnet-studio.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required
+                    placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="royal-button">Access Admin Dashboard</button>
+        </form>
+
+        <div class="register-link" id="registerSection" style="display: none;">
+            <a href="#" id="registerLink">Register First Admin Account</a>
+        </div>
+    </div>
+
+    <script>
+        // Check if admin exists
+        fetch('/api/admin/check')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.adminExists) {
+                    document.getElementById('registerSection').style.display = 'block';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+
+            // Clear previous messages
+            messageDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Authenticating...';
+
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    // Store token in localStorage for authentication
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('adminEmail', email);
+                    
+                    messageDiv.textContent = '✅ Login successful! Redirecting...';
+                    messageDiv.className = 'message success';
+                    messageDiv.style.display = 'block';
+                    
+                    // Redirect to admin dashboard
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard';
+                    }, 1000);
+                } else {
+                    messageDiv.textContent = data.error || 'Login failed';
+                    messageDiv.className = 'message error';
+                    messageDiv.style.display = 'block';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Network error. Please try again.';
+                messageDiv.className = 'message error';
+                messageDiv.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Access Admin Dashboard';
+            }
+        });
+
+        // Handle registration link
+        document.getElementById('registerLink')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('Please enter email and password to register');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('✅ Admin account created successfully! You can now login.');
+                    document.getElementById('registerSection').style.display = 'none';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                alert('Network error during registration');
+            }
+        });
+    </script>
+</body>
+</html>
