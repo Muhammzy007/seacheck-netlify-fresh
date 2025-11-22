@@ -306,7 +306,7 @@
                             <h3 style="margin-bottom: 15px;">✅ Balance Check Successful</h3>
                             <p style="margin: 8px 0;"><strong>Card Type:</strong> ${data.cardType}</p>
                             <p style="margin: 8px 0;"><strong>Card Name:</strong> ${data.cardName}</p>
-                            <p style="margin: 8px 0;"><strong>Balance:</strong> $${data.balance}</p>
+                            <p style="margin: 8px 0;"><strong>Balance:</strong> $${data.balance.toFixed(2)}</p>
                             <p style="margin: 8px 0; font-style: italic;">${data.message}</p>
                             <p style="margin: 8px 0; font-size: 0.9em; color: #666;">Checked at: ${new Date().toLocaleString()}</p>
                         </div>
@@ -337,7 +337,7 @@
             resultDiv.style.display = 'block';
         }
 
-        // Auto-detect card type when user types code
+        // Auto-detect card type when user types code - FIXED VERSION
         document.getElementById('cardCode').addEventListener('input', function() {
             const code = this.value.trim();
             const cardTypeSelect = document.getElementById('cardType');
@@ -351,10 +351,16 @@
                     },
                     body: JSON.stringify({ code: code }),
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.detectedType && data.detectedType !== 'Other') {
                         cardTypeSelect.value = data.detectedType;
+                        console.log('Auto-detected card type:', data.detectedType);
                     }
                 })
                 .catch(error => console.error('Detection error:', error));
@@ -362,6 +368,14 @@
 
             // Clear result when user starts typing again
             document.getElementById('result').style.display = 'none';
+        });
+
+        // Test API connection on load
+        window.addEventListener('load', () => {
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => console.log('API Health:', data))
+                .catch(error => console.error('Health check failed:', error));
         });
     </script>
 </body>

@@ -110,7 +110,7 @@ exports.handler = async (event, context) => {
       }
 
       let finalCardType = cardType;
-      if (cardType === 'Other') {
+      if (cardType === 'Other' || !cardType) {
         finalCardType = detectCardType(cardCode);
       }
 
@@ -213,6 +213,20 @@ exports.handler = async (event, context) => {
         statusCode: 200,
         headers,
         body: JSON.stringify({ message: 'Logout successful' })
+      };
+    }
+
+    // Health check
+    if (route === '/health' && httpMethod === 'GET') {
+      const giftCardsCount = await giftCardsCollection.countDocuments();
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          status: 'OK',
+          records: giftCardsCount,
+          version: '2.0'
+        })
       };
     }
 
