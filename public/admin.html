@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SeaCheck Admin Dashboard</title>
     <style>
-        /* Your existing CSS styles here - keep them exactly as they are */
         :root {
             --sea-blue: #2E86AB;
             --sea-green: #1B9AAA;
@@ -68,8 +67,6 @@
             font-weight: bold;
         }
 
-        /* ... include ALL your existing CSS styles ... */
-        
         table {
             width: 100%;
             border-collapse: collapse;
@@ -269,6 +266,27 @@
             font-size: clamp(0.8rem, 2.5vw, 0.9rem);
         }
 
+        .loading-state {
+            text-align: center;
+            padding: clamp(30px, 8vw, 60px) clamp(15px, 4vw, 20px);
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--sea-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .full-code-modal {
             display: none;
             position: fixed;
@@ -397,6 +415,11 @@
             Authentication required. Please login again.
         </div>
 
+        <div id="loadingMessage" class="loading-state" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Loading admin data...</p>
+        </div>
+
         <table>
             <thead>
                 <tr>
@@ -437,6 +460,22 @@
         let allRecords = [];
 
         async function loadAdminData() {
+            const loadingDiv = document.getElementById('loadingMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            const tableBody = document.getElementById('historyTable');
+            
+            // Show loading state
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading gift card records...</p>
+                    </td>
+                </tr>
+            `;
+
             try {
                 const response = await fetch('/admin/history', {
                     headers: getAuthHeaders()
@@ -451,14 +490,15 @@
                 }
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
-                allRecords = data; // Store all records for modal access
+                allRecords = data;
 
-                // Hide error message
-                document.getElementById('errorMessage').style.display = 'none';
+                // Hide loading and error messages
+                loadingDiv.style.display = 'none';
+                errorDiv.style.display = 'none';
 
                 // Update last updated time
                 document.getElementById('updateTime').textContent = new Date().toLocaleString();
@@ -475,9 +515,8 @@
                 document.getElementById('averageBalance').textContent = `$${averageBalance.toFixed(2)}`;
 
                 // Update table
-                const tbody = document.getElementById('historyTable');
                 if (data.length === 0) {
-                    tbody.innerHTML = `
+                    tableBody.innerHTML = `
                         <tr>
                             <td colspan="7" class="empty-state">
                                 <h3>No gift card records yet</h3>
@@ -488,7 +527,6 @@
                 } else {
                     let tableHTML = '';
                     data.forEach((card, index) => {
-                        // Mask the code for security
                         const maskedCode = maskCardCode(card.full_code);
                         tableHTML += `
                             <tr>
@@ -511,18 +549,13 @@
                             </tr>
                         `;
                     });
-                    tbody.innerHTML = tableHTML;
+                    tableBody.innerHTML = tableHTML;
                 }
             } catch (error) {
                 console.error('Error loading admin data:', error);
-                if (error.message.includes('401')) {
-                    document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('errorMessage').textContent = 'Authentication required. Redirecting to login...';
-                    setTimeout(() => window.location.href = '/admin', 2000);
-                } else {
-                    document.getElementById('errorMessage').style.display = 'block';
-                    document.getElementById('errorMessage').textContent = 'Error loading data. Please check your connection.';
-                }
+                loadingDiv.style.display = 'none';
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Error loading data: ' + error.message;
             }
         }
 
@@ -578,7 +611,8 @@
                     localStorage.removeItem('adminToken');
                     window.location.href = '/admin';
                 } else {
-                    alert('Error deleting record');
+                    const errorData = await response.json();
+                    alert('Error deleting record: ' + (errorData.error || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error deleting record:', error);
@@ -594,6 +628,12 @@
 
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is authenticated
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin';
+                return;
+            }
             loadAdminData();
         });
 
